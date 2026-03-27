@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gire e Ganha - Bônus Exclusivo Brasil</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background: #1a1a1a url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* --- PERSONAGENS (Nascosti di base su mobile) --- */
+        .char-left, .char-right {
+            position: absolute;
+            bottom: 0;
+            width: 25%; 
+            height: 70%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom;
+            z-index: 1;
+            pointer-events: none;
+            display: none; /* Nascosti per default */
+        }
+        .char-left { left: 0; background-image: url('personaggio-sinistra.png'); }
+        .char-right { right: 0; background-image: url('personaggio-destra.png'); }
+
+        /* --- CONTAINER PRINCIPALE --- */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 95%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
+            font-size: clamp(1.4rem, 5vw, 2.2rem); /* Dimensione dinamica */
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            width: 100%;
+        }
+
+        .subtitle {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        /* --- RUOTA DINAMICA --- */
+        .wheel-wrapper {
+            position: relative;
+            /* La ruota occupa il 90% della larghezza su mobile, max 450px */
+            width: min(90vw, 450px);
+            aspect-ratio: 1 / 1; 
+            margin: 10px auto;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15%; /* Scalato in base alla ruota */
+            height: 15%;
+            background: url('pointer.png') no-repeat center center;
+            background-size: contain;
+            z-index: 20;
+            border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 25px solid #ffd700;
+        }
+
+        .wheel-disk {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: url('wheel-disk.png') no-repeat center center;
+            background-size: contain;
+            transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .spin-trigger {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25%; /* Scalato in base alla ruota */
+            height: 25%;
+            cursor: pointer;
+            z-index: 25;
+            background: url('spin-button.png') no-repeat center center;
+            background-size: contain;
+            border: none;
+            outline: none;
+            filter: drop-shadow(0 0 8px gold);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.08); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* --- MODALE RISULTATO --- */
+        #result-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            backdrop-filter: blur(8px);
+        }
+
+        .cta-box {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 30px 20px;
+            border-radius: 20px;
+            color: #333;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px #ffd700;
+            border: 4px solid #ffd700;
+        }
+
+        .affiliate-link {
+            display: block;
+            margin-top: 20px;
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-weight: bold;
+            box-shadow: 0 5px 0 #1e8449;
+            text-transform: uppercase;
+        }
+
+        /* --- MEDIA QUERIES PER DESKTOP --- */
+        @media (min-width: 1024px) {
+            .char-left, .char-right { display: block; } /* Mostra personaggi su schermi grandi */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="char-left"></div>
+    <div class="char-right"></div>
+
+    <div class="main-container">
+        <h1>BÔNUS DE <span style="color: #ffd700;">100%</span> NO DEPÓSITO</h1>
+        <p class="subtitle">Gire a roleta e ganhe!</p>
+        
+        <div class="wheel-wrapper">
+            <div class="pointer"></div>
+            <div id="wheel" class="wheel-disk"></div>
+            <button class="spin-trigger" id="spinBtn" onclick="jogarRoleta()"></button>
+        </div>
+    </div>
+
+    <div id="result-overlay">
+        <div class="cta-box">
+            <h2 style="color: #d35400; font-size: 1.8rem;">PARABÉNS! 🎉</h2>
+            <p style="font-size: 1.1rem; margin: 15px 0; line-height: 1.4;">
+                Você ganhou o seu <strong>Bônus Especial de 100% + 500 Giros Grátis!</strong>
+            </p>
+            <a href="https://SEU-LINK-AFILIADO.com" class="affiliate-link">RESGATAR AGORA →</a>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: #666; font-weight: bold;">
+                ⚠️ Oferta expira em <span id="timer">05:00</span> minutos
+            </p>
+        </div>
+    </div>
+
+    <script>
+        /* La logica JavaScript rimane la stessa del tuo file originale */
+        let girando = false;
+        function jogarRoleta() {
+            if (girando) return;
+            girando = true;
+            const wheel = document.getElementById('wheel');
+            const btn = document.getElementById('spinBtn');
+            btn.style.opacity = '0';
+            btn.style.pointerEvents = 'none';
+            const anguloVitoria = 2880 + 144; 
+            wheel.style.transform = `rotate(${anguloVitoria}deg)`;
+            setTimeout(() => {
+                document.getElementById('result-overlay').style.display = 'flex';
+                iniciarContagem();
+            }, 5200);
+        }
+
+        function iniciarContagem() {
+            let tempo = 300; 
+            const display = document.getElementById('timer');
+            const interval = setInterval(() => {
+                let minutos = Math.floor(tempo / 60);
+                let segundos = tempo % 60;
+                segundos = segundos < 10 ? '0' + segundos : segundos;
+                display.innerText = `0${minutos}:${segundos}`;
+                if (tempo > 0) tempo--; else clearInterval(interval);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
