@@ -19,21 +19,52 @@
             color: white;
         }
 
-        /* --- PERSONAGENS (Nascosti di base su mobile) --- */
+        /* --- ANIMAZIONE MONETE --- */
+        #coins-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .coin-particle {
+            position: absolute;
+            background: url('https://img.icons8.com/emoji/48/000000/coin-emoji.png') no-repeat center;
+            background-size: contain;
+            opacity: 0.6;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- PERSONAGENS E AMBIENTE --- */
         .char-left, .char-right {
             position: absolute;
             bottom: 0;
-            width: 25%; 
-            height: 70%;
+            width: 25%; height: 75%;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: bottom;
             z-index: 1;
             pointer-events: none;
-            display: none; /* Nascosti per default */
+            animation: floating 4s ease-in-out infinite;
+            display: none;
         }
+        @media (min-width: 1024px) { .char-left, .char-right { display: block; } }
+
         .char-left { left: 0; background-image: url('personaggio-sinistra.png'); }
         .char-right { right: 0; background-image: url('personaggio-destra.png'); }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
 
         /* --- CONTAINER PRINCIPALE --- */
         .main-container {
@@ -42,83 +73,69 @@
             text-align: center;
             width: 95%;
             max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         h1 {
-            text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
-            font-size: clamp(1.4rem, 5vw, 2.2rem); /* Dimensione dinamica */
+            text-shadow: 0 0 20px rgba(0,0,0,0.9);
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            text-transform: uppercase;
             margin-bottom: 5px;
-            text-transform: uppercase;
-            width: 100%;
         }
 
-        .subtitle {
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: clamp(0.9rem, 3vw, 1.2rem);
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-
-        /* --- RUOTA DINAMICA --- */
+        /* --- WHEEL CON PULSE --- */
         .wheel-wrapper {
             position: relative;
-            /* La ruota occupa il 90% della larghezza su mobile, max 450px */
-            width: min(90vw, 450px);
+            width: min(85vw, 450px);
             aspect-ratio: 1 / 1; 
-            margin: 10px auto;
+            margin: 20px auto;
+            /* APPLICHIAMO IL PULSE AL WRAPPER */
+            animation: wheelPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes wheelPulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
+            50% { transform: scale(1.03); filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4)); }
         }
 
         .pointer {
             position: absolute;
-            top: -5%;
-            left: 50%;
+            top: -5%; left: 50%;
             transform: translateX(-50%);
-            width: 15%; /* Scalato in base alla ruota */
-            height: 15%;
+            width: 15%; height: 15%;
             background: url('pointer.png') no-repeat center center;
             background-size: contain;
             z-index: 20;
-            border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 25px solid #ffd700;
         }
 
         .wheel-disk {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             background: url('wheel-disk.png') no-repeat center center;
             background-size: contain;
             transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
 
         .spin-trigger {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 25%; /* Scalato in base alla ruota */
-            height: 25%;
+            width: 25%; height: 25%;
             cursor: pointer;
             z-index: 25;
             background: url('spin-button.png') no-repeat center center;
             background-size: contain;
             border: none;
-            outline: none;
-            filter: drop-shadow(0 0 8px gold);
-            animation: pulse 2s infinite;
+            filter: drop-shadow(0 0 10px gold);
+            animation: btnPulse 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.08); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+        @keyframes btnPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
         }
 
-        /* --- MODALE RISULTATO --- */
+        /* --- RESULT OVERLAY --- */
         #result-overlay {
             display: none;
             position: fixed;
@@ -128,19 +145,18 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
         }
 
         .cta-box {
-            background: linear-gradient(145deg, #ffffff, #f0f0f0);
-            padding: 30px 20px;
+            background: white;
+            padding: 30px;
             border-radius: 20px;
             color: #333;
-            width: 100%;
+            width: 90%;
             max-width: 400px;
-            box-shadow: 0 0 30px #ffd700;
-            border: 4px solid #ffd700;
+            text-align: center;
+            border: 4px solid gold;
         }
 
         .affiliate-link {
@@ -151,50 +167,11 @@
             text-decoration: none;
             padding: 18px;
             border-radius: 12px;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-size: 1.4rem;
             font-weight: bold;
             box-shadow: 0 5px 0 #1e8449;
             text-transform: uppercase;
         }
-
-        /* --- MEDIA QUERIES PER DESKTOP --- */
-        @media (min-width: 1024px) {
-            .char-left, .char-right { display: block; } /* Mostra personaggi su schermi grandi */
-        }
-/* Container per le monete animate */
-#coins-container {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none; /* Non blocca i click sulla ruota */
-    z-index: 2; /* Sopra lo sfondo, sotto la ruota */
-}
-
-.coin-particle {
-    position: absolute;
-    background: url('https://img.icons8.com/emoji/48/000000/coin-emoji.png') no-repeat center;
-    background-size: contain;
-    width: 20px; height: 20px;
-    opacity: 0.6;
-    animation: fall linear infinite;
-}
-
-@keyframes fall {
-    0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.8; }
-    90% { opacity: 0.8; }
-    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-}
-
-/* Effetto fluttuante per i personaggi (Mobile Friendly) */
-.char-left, .char-right {
-    animation: floating 4s ease-in-out infinite;
-}
-
-@keyframes floating {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-}
     </style>
 </head>
 <body>
@@ -203,10 +180,10 @@
     <div class="char-right"></div>
 
     <div class="main-container">
-        <h1>BÔNUS DE <span style="color: #ffd700;">100%</span> NO DEPÓSITO</h1>
-        <p class="subtitle">Gire a roleta e ganhe!</p>
+        <h1>BÔNUS DE <span style="color: gold;">100%</span></h1>
+        <p style="text-transform: uppercase; letter-spacing: 1px;">Gire a roleta e ganhe!</p>
         
-        <div class="wheel-wrapper">
+        <div id="wheel-container" class="wheel-wrapper">
             <div class="pointer"></div>
             <div id="wheel" class="wheel-disk"></div>
             <button class="spin-trigger" id="spinBtn" onclick="jogarRoleta()"></button>
@@ -215,81 +192,75 @@
 
     <div id="result-overlay">
         <div class="cta-box">
-            <h2 style="color: #d35400; font-size: 1.8rem;">PARABÉNS! 🎉</h2>
-            <p style="font-size: 1.1rem; margin: 15px 0; line-height: 1.4;">
-                Você ganhou o seu <strong>Bônus Especial de 100% + 500 Giros Grátis!</strong>
-            </p>
-            <a href="https://SEU-LINK-AFILIADO.com" class="affiliate-link">RESGATAR AGORA →</a>
-            <p style="font-size: 0.8rem; margin-top: 15px; color: #666; font-weight: bold;">
-                ⚠️ Oferta expira em <span id="timer">05:00</span> minutos
+            <h2 style="color: #d35400;">PARABÉNS! 🎉</h2>
+            <p style="margin: 15px 0;">Você ganhou <b>Bônus de 100% + 500 Giros Grátis!</b></p>
+            <a href="https://SEU-LINK-AFILIADO.com" class="affiliate-link">RESGATAR AGORA</a>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: #666;">
+                Oferta expira em: <span id="timer">05:00</span>
             </p>
         </div>
     </div>
 
     <script>
-        /* La logica JavaScript rimane la stessa del tuo file originale */
+        // --- ANIMAZIONE MONETE ---
+        function createCoins() {
+            const container = document.createElement('div');
+            container.id = 'coins-container';
+            document.body.appendChild(container);
+            const isMobile = window.innerWidth < 768;
+            const coinCount = isMobile ? 15 : 35;
+
+            for (let i = 0; i < coinCount; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin-particle';
+                const left = Math.random() * 100;
+                const duration = 4 + Math.random() * 6;
+                const delay = Math.random() * 5;
+                const size = 15 + Math.random() * 20;
+                coin.style.left = left + '%';
+                coin.style.animationDuration = duration + 's';
+                coin.style.animationDelay = delay + 's';
+                coin.style.width = size + 'px';
+                coin.style.height = size + 'px';
+                container.appendChild(coin);
+            }
+        }
+
+        // --- LOGICA RUOTA ---
         let girando = false;
         function jogarRoleta() {
             if (girando) return;
             girando = true;
+            
             const wheel = document.getElementById('wheel');
+            const wrapper = document.getElementById('wheel-container');
             const btn = document.getElementById('spinBtn');
-            btn.style.opacity = '0';
-            btn.style.pointerEvents = 'none';
+
+            // Fermiamo il pulse durante il giro per fluidità
+            wrapper.style.animation = 'none';
+            btn.style.display = 'none';
+
             const anguloVitoria = 2880 + 144; 
             wheel.style.transform = `rotate(${anguloVitoria}deg)`;
+
             setTimeout(() => {
                 document.getElementById('result-overlay').style.display = 'flex';
-                iniciarContagem();
+                iniciarTimer();
             }, 5200);
         }
 
-        function iniciarContagem() {
-            let tempo = 300; 
+        function iniciarTimer() {
+            let tempo = 300;
             const display = document.getElementById('timer');
-            const interval = setInterval(() => {
-                let minutos = Math.floor(tempo / 60);
-                let segundos = tempo % 60;
-                segundos = segundos < 10 ? '0' + segundos : segundos;
-                display.innerText = `0${minutos}:${segundos}`;
-                if (tempo > 0) tempo--; else clearInterval(interval);
+            setInterval(() => {
+                let min = Math.floor(tempo / 60);
+                let sec = tempo % 60;
+                display.innerText = `0${min}:${sec < 10 ? '0'+sec : sec}`;
+                if (tempo > 0) tempo--;
             }, 1000);
         }
-        function createCoins() {
-    const container = document.createElement('div');
-    container.id = 'coins-container';
-    document.body.appendChild(container);
 
-    // Riduciamo il numero di monete se è mobile (max 15 invece di 40)
-    const isMobile = window.innerWidth < 768;
-    const coinCount = isMobile ? 15 : 40;
-
-    for (let i = 0; i < coinCount; i++) {
-        const coin = document.createElement('div');
-        coin.className = 'coin-particle';
-        
-        // Posizione e ritardo casuale
-        const left = Math.random() * 100;
-        const duration = 4 + Math.random() * 6;
-        const delay = Math.random() * 5;
-        const size = 15 + Math.random() * 20;
-
-        coin.style.left = left + '%';
-        coin.style.animationDuration = duration + 's';
-        coin.style.animationDelay = delay + 's';
-        coin.style.width = size + 'px';
-        coin.style.height = size + 'px';
-
-        container.appendChild(coin);
-    }
-}
-
-// Avvia l'animazione al caricamento
-window.onload = () => {
-    createCoins();
-    // Se avevi altre funzioni nel window.onload, mettile qui
-};
+        window.onload = createCoins;
     </script>
-    
 </body>
 </html>
