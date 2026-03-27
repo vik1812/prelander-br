@@ -161,7 +161,40 @@
         @media (min-width: 1024px) {
             .char-left, .char-right { display: block; } /* Mostra personaggi su schermi grandi */
         }
+/* Container per le monete animate */
+#coins-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; /* Non blocca i click sulla ruota */
+    z-index: 2; /* Sopra lo sfondo, sotto la ruota */
+}
 
+.coin-particle {
+    position: absolute;
+    background: url('https://img.icons8.com/emoji/48/000000/coin-emoji.png') no-repeat center;
+    background-size: contain;
+    width: 20px; height: 20px;
+    opacity: 0.6;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+/* Effetto fluttuante per i personaggi (Mobile Friendly) */
+.char-left, .char-right {
+    animation: floating 4s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
     </style>
 </head>
 <body>
@@ -222,6 +255,41 @@
                 if (tempo > 0) tempo--; else clearInterval(interval);
             }, 1000);
         }
+        function createCoins() {
+    const container = document.createElement('div');
+    container.id = 'coins-container';
+    document.body.appendChild(container);
+
+    // Riduciamo il numero di monete se è mobile (max 15 invece di 40)
+    const isMobile = window.innerWidth < 768;
+    const coinCount = isMobile ? 15 : 40;
+
+    for (let i = 0; i < coinCount; i++) {
+        const coin = document.createElement('div');
+        coin.className = 'coin-particle';
+        
+        // Posizione e ritardo casuale
+        const left = Math.random() * 100;
+        const duration = 4 + Math.random() * 6;
+        const delay = Math.random() * 5;
+        const size = 15 + Math.random() * 20;
+
+        coin.style.left = left + '%';
+        coin.style.animationDuration = duration + 's';
+        coin.style.animationDelay = delay + 's';
+        coin.style.width = size + 'px';
+        coin.style.height = size + 'px';
+
+        container.appendChild(coin);
+    }
+}
+
+// Avvia l'animazione al caricamento
+window.onload = () => {
+    createCoins();
+    // Se avevi altre funzioni nel window.onload, mettile qui
+};
     </script>
+    
 </body>
 </html>
